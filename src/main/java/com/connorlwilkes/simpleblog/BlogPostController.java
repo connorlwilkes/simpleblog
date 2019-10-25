@@ -20,13 +20,18 @@ public class BlogPostController {
         return blogPostRepository.findAll(pageable);
     }
 
+    @GetMapping("/blogPost/{id}")
+    public BlogPost getBlogPost(@PathVariable(required = true) long id) {
+        return blogPostRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    }
+
     @PostMapping("/blogPost")
     public BlogPost createBlogPost(@Valid @RequestBody BlogPost blogPost) {
         return blogPostRepository.save(blogPost);
     }
 
     @PutMapping("/blogPost/{id}")
-    public BlogPost updateBlogPost(@PathVariable long id, @Valid @RequestBody BlogPost newBlogPost) {
+    public BlogPost updateBlogPost(@PathVariable(required = true) long id, @Valid @RequestBody BlogPost newBlogPost) {
         return blogPostRepository.findById(id).map(
                 blogPost -> {
                     blogPost.setContent(newBlogPost.getContent());
