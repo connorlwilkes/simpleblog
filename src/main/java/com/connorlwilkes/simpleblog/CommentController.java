@@ -14,13 +14,20 @@ public class CommentController {
     @Autowired
     private CommentRepository repository;
 
+    @Autowired
+    private BlogPostRepository blogPostRepository;
+
     @GetMapping("/getCommentsForBlogPost/{blogId}")
-    public List<Comment> getCommentByBlogPost(@PathVariable long id, Pageable pageable) {
-        return repository.findByBlogPost(id, pageable);
+    public List<Comment> getCommentByBlogPost(@PathVariable long blogId, Pageable pageable) {
+        return blogPostRepository.findById(blogId)
+                .map(BlogPost::getComments).orElseThrow(() -> new ResourceNotFoundException("No blog post"));
     }
 
     @PostMapping("/postCommentToBlogPost/{blogId}")
-    public Comment addCommentToBlogPost(@PathVariable long id, @Valid @RequestBody Comment newComment) {
-        return repository.save(newComment);
+    public Comment addCommentToBlogPost(@PathVariable long blogId, @Valid @RequestBody Comment newComment) {
+        return blogPostRepository.findById(blogId).map(blogPost -> {
+            newComment.setBlogPost(blogPost);
+            return repository.save(newComment);
+        }).orElseThrow(() -> new ResourceNotFoundException("No blog post"));
     }
 }

@@ -1,6 +1,8 @@
 package com.connorlwilkes.simpleblog;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -17,11 +19,12 @@ public class Comment {
 
     private String content;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blog_post_id")
+    @JsonBackReference
     private BlogPost blogPost;
 
     protected Comment() {
     }
-
 }
